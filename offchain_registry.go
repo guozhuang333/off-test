@@ -3,8 +3,7 @@ package offchain_transmission
 import (
 	"context"
 	"fmt"
-	"github.com/meshplus/bitxhub-core/agency"
-	"github.com/meshplus/bitxhub-kit/log"
+	"github.com/guozhuang333/bitxhub-core/agency"
 	"github.com/meshplus/bitxhub-model/pb"
 	"github.com/sirupsen/logrus"
 )
@@ -28,19 +27,8 @@ type Payload struct {
 
 const FILECHUNK = 1 << 29
 
-func New(appchainID, path string, peerMgr agency.PeerManager, client agency.Client) agency.OffChainTransmission {
-	ctx, cancel := context.WithCancel(context.Background())
-	var logger = log.NewWithModule("offChainTransmission")
-	return &OffChainTransmissionMgr{
-		appchainID: appchainID,
-		savePath:   path,
-		peerMgr:    peerMgr,
-		logger:     logger,
-		client:     client,
-		reqCh:      client.GetOffChainDataReq(),
-		ctx:        ctx,
-		cancel:     cancel,
-	}
+func New() agency.OffChainTransmission {
+	return &OffChainTransmissionMgr{}
 }
 
 func init() {
