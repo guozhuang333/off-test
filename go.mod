@@ -1,4 +1,4 @@
-module git.hyperchain.cn/dmlab/offchain-transmission
+module github.com/guozhuang333/off-test
 
 go 1.14
 
