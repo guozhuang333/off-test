@@ -2,22 +2,24 @@ package offchain_transmission
 
 import (
 	"context"
+	"crypto/ed25519"
 	"fmt"
 	"github.com/guozhuang333/bitxhub-core/agency"
-	"github.com/meshplus/bitxhub-model/pb"
+	"github.com/meshplus/bitxhub-kit/log"
 	"github.com/sirupsen/logrus"
+	"github.com/yoseplee/vrf"
 )
 
 type OffChainTransmissionMgr struct {
-	peerMgr      agency.PeerManager
-	logger       *logrus.Entry
-	appchainID   string
-	savePath     string
-	remotePierID []string
-	reqCh        chan *pb.GetDataRequest
-	client       agency.Client
-	ctx          context.Context
-	cancel       context.CancelFunc
+	//peerMgr      agency.PeerManager
+	logger *logrus.Entry
+	//appchainID   string
+	//savePath     string
+	//remotePierID []string
+	//reqCh        chan *pb.GetDataRequest
+	//client       agency.Client
+	//ctx          context.Context
+	cancel context.CancelFunc
 }
 
 type Payload struct {
@@ -28,7 +30,13 @@ type Payload struct {
 const FILECHUNK = 1 << 29
 
 func New() agency.OffChainTransmission {
-	return &OffChainTransmissionMgr{}
+	//ctx, cancel := context.WithCancel(context.Background())
+	var logger = log.NewWithModule("offChainTransmission")
+	return &OffChainTransmissionMgr{
+		logger: logger,
+		//ctx:    ctx,
+		//cancel: cancel,
+	}
 }
 
 func init() {
@@ -48,11 +56,14 @@ func (o *OffChainTransmissionMgr) Start() error {
 	//	return fmt.Errorf("register get address msg handler: %w", err)
 	//}
 
-	if err := o.peerMgr.Start(); err != nil {
-		return fmt.Errorf("peerMgr start: %w", err)
-	}
+	//if err := o.peerMgr.Start(); err != nil {
+	//	return fmt.Errorf("peerMgr start: %w", err)
+	//}
 
-	o.logger.Info("测试成功")
+	fmt.Printf("测试成功")
+	fmt.Println(o.test(1, 2))
+
+	//o.logger.Info("测试成功")
 
 	return nil
 }
@@ -61,6 +72,18 @@ func (o *OffChainTransmissionMgr) Stop() error {
 	o.cancel()
 
 	return nil
+}
+
+func (o *OffChainTransmissionMgr) VRF(lastHash []byte) ([]byte, error) {
+	PublicKey, PrivateKey, err := ed25519.GenerateKey(nil)
+	if err != nil {
+		return nil, err
+	}
+	prove, _, err := vrf.Prove(PublicKey, PrivateKey, lastHash)
+	if err != nil {
+		return nil, err
+	}
+	return prove, nil
 }
 
 func (o *OffChainTransmissionMgr) test(a int, b int) int {
